@@ -57,36 +57,36 @@ All tests must pass when running npm test.
 ```
 
 ### 1.1 Project Initialization
-- [ ] Create `backend/` directory
-- [ ] Run `npm init -y` inside `backend/`
-- [ ] Install dependencies: `express`, `cors`
-- [ ] Install dev dependencies: `jest`, `supertest`, `nodemon`
-- [ ] Add `main`, `scripts.start`, `scripts.dev`, `scripts.test` to `package.json`
-- [ ] Set `"type": "module"` or configure CommonJS consistently
+- [x] Create `backend/` directory
+- [x] Run `npm init -y` inside `backend/`
+- [x] Install dependencies: `express`, `cors`
+- [x] Install dev dependencies: `jest`, `supertest`, `nodemon`
+- [x] Add `main`, `scripts.start`, `scripts.dev`, `scripts.test` to `package.json`
+- [x] Set `"type": "module"` or configure CommonJS consistently
 
 ### 1.2 Server Implementation
-- [ ] Create `backend/src/server.js`
-- [ ] Create Express app instance (exported separately from `listen` call)
-- [ ] Register `cors()` middleware
-- [ ] Register `express.json()` middleware
-- [ ] Implement `GET /metrics` route returning fixed JSON payload
-- [ ] Create `backend/src/index.js` that calls `app.listen()` (entry point)
+- [x] Create `backend/src/server.js`
+- [x] Create Express app instance (exported separately from `listen` call)
+- [x] Register `cors()` middleware
+- [x] Register `express.json()` middleware
+- [x] Implement `GET /metrics` route returning fixed JSON payload
+- [x] Create `backend/src/index.js` that calls `app.listen()` (entry point)
 
 ### 1.3 Fixed Metrics Data
-- [ ] Define metrics object: `{ lambdaInvocations: 120, s3StorageMB: 450, apiErrors: 3, responseTime: 250, userActivity: 75 }`
-- [ ] Return metrics with `200` status and `Content-Type: application/json`
+- [x] Define metrics object: `{ lambdaInvocations: 120, s3StorageMB: 450, apiErrors: 3, responseTime: 250, userActivity: 75 }`
+- [x] Return metrics with `200` status and `Content-Type: application/json`
 
 ### 1.4 Backend Tests
-- [ ] Create `backend/tests/metrics.test.js`
-- [ ] Test: `GET /metrics` returns status `200`
-- [ ] Test: response `Content-Type` is `application/json`
-- [ ] Test: `lambdaInvocations` equals `120`
-- [ ] Test: `s3StorageMB` equals `450`
-- [ ] Test: `apiErrors` equals `3`
-- [ ] Test: `responseTime` equals `250`
-- [ ] Test: `userActivity` equals `75`
-- [ ] Test: response has exactly the 5 expected keys (no extra fields)
-- [ ] All backend tests pass (`npm test` green)
+- [x] Create `backend/tests/metrics.test.js`
+- [x] Test: `GET /metrics` returns status `200`
+- [x] Test: response `Content-Type` is `application/json`
+- [x] Test: `lambdaInvocations` equals `120`
+- [x] Test: `s3StorageMB` equals `450`
+- [x] Test: `apiErrors` equals `3`
+- [x] Test: `responseTime` equals `250`
+- [x] Test: `userActivity` equals `75`
+- [x] Test: response has exactly the 5 expected keys (no extra fields)
+- [x] All backend tests pass (`npm test` green)
 
 ---
 
@@ -799,7 +799,7 @@ Then create:
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| 1 | Backend Express API | ⬜ |
+| 1 | Backend Express API | ✅ |
 | 2 | Frontend Vite + React setup | ⬜ |
 | 3 | `useMetrics` hook | ⬜ |
 | 4 | `MetricBlock` base component | ⬜ |
