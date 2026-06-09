@@ -151,27 +151,27 @@ Run npm test — the smoke test must pass.
 ```
 
 ### 2.1 Project Initialization
-- [ ] Scaffold with `npm create vite@latest frontend -- --template react`
-- [ ] Run `npm install` inside `frontend/`
-- [ ] Delete boilerplate: `src/App.css`, contents of `src/assets/`, boilerplate in `App.jsx`
-- [ ] Verify `npm run dev` starts without errors
+- [x] Scaffold with `npm create vite@latest frontend -- --template react`
+- [x] Run `npm install` inside `frontend/`
+- [x] Delete boilerplate: `src/App.css`, contents of `src/assets/`, boilerplate in `App.jsx`
+- [x] Verify `npm run dev` starts without errors
 
 ### 2.2 Testing Framework Setup
-- [ ] Install dev dependencies: `vitest`, `@vitest/ui`, `jsdom`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`
-- [ ] Add `test` config block to `vite.config.js` (environment: `jsdom`, globals: true, setupFiles)
-- [ ] Create `frontend/src/setupTests.js` importing `@testing-library/jest-dom`
-- [ ] Add `"test": "vitest"` and `"test:ui": "vitest --ui"` scripts to `package.json`
-- [ ] Create `frontend/src/App.test.jsx` with a smoke test (renders without crash)
-- [ ] Confirm `npm test` passes
+- [x] Install dev dependencies: `vitest`, `@vitest/ui`, `jsdom`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`
+- [x] Add `test` config block to `vite.config.js` (environment: `jsdom`, globals: true, setupFiles)
+- [x] Create `frontend/src/setupTests.js` importing `@testing-library/jest-dom`
+- [x] Add `"test": "vitest"` and `"test:ui": "vitest --ui"` scripts to `package.json`
+- [x] Create `frontend/src/App.test.jsx` with a smoke test (renders without crash)
+- [x] Confirm `npm test` passes
 
 ### 2.3 Folder Structure
-- [ ] Create `frontend/src/components/` directory
-- [ ] Create `frontend/src/hooks/` directory
+- [x] Create `frontend/src/components/` directory
+- [x] Create `frontend/src/hooks/` directory
 - [ ] Create `frontend/src/styles/` directory (or use CSS modules per component)
 
 ### 2.4 API Base URL Configuration
-- [ ] Add `VITE_API_URL=http://localhost:4000` to `frontend/.env.development`
-- [ ] Confirm Vite proxy or env var is usable inside components
+- [x] Add `VITE_API_URL=http://localhost:4000` to `frontend/.env.development`
+- [x] Confirm Vite proxy or env var is usable inside components
 
 ---
 
