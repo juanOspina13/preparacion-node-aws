@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
-
+console.log(process.env.API_KEY); // Log the API key to verify it's loaded correctly
 app.use(cors());
 app.use(express.json());
 
