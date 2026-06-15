@@ -272,38 +272,60 @@ El test de servicio va un nivel más abajo: verifica que el valor devuelto satis
 
 ---
 
-## Comandos
+## Cómo ejecutar el backend
+
+El backend está compuesto por handlers de AWS Lambda; no incluye un servidor HTTP local. Los pasos para trabajar con él son:
+
+### 1. Instalar dependencias
 
 ```bash
-# Backend
 cd backend
 npm install
-npm run build         # compila a build/
-npm test              # Jest
-npm run test:coverage # Jest con cobertura
-
-# Frontend
-cd frontend
-npm install
-npm run dev           # Vite en http://localhost:5173
-npm test              # Vitest
 ```
 
-Variables de entorno del frontend: `VITE_API_URL` en `frontend/.env.development` apunta a la URL base del backend.
+### 2. Compilar
+
+```bash
+npm run build
+```
+
+Genera un bundle CommonJS por handler en `backend/build/`. Internamente usa `tsup` (basado en esbuild).
+
+Para re-compilar automáticamente cuando cambia un archivo:
+
+```bash
+npm run build:watch
+```
+
+### 3. Ejecutar los tests
+
+```bash
+npm test                # Jest — pasa una vez y sale
+npm run test:watch      # Jest en modo observador
+npm run test:coverage   # Jest con reporte de cobertura
+```
+
+Los tests no requieren credenciales AWS ni base de datos. Usan datos fijos y mocks de eventos API Gateway.
+
+### 4. Lint y formato
+
+```bash
+npm run lint            # ESLint sobre src/ y tests/
+npm run format          # Prettier sobre src/ y tests/
+```
 
 ---
 
-## Stack completo en local
+## Comandos del frontend
 
 ```bash
-# Terminal 1
-cd backend && npm start        # puerto 4000
-
-# Terminal 2
-cd frontend && npm run dev     # puerto 5173
+cd frontend
+npm install
+npm run dev             # Vite en http://localhost:5173
+npm test                # Vitest
 ```
 
-Abrir `http://localhost:5173`. El dashboard obtiene `GET /metrics` del backend y renderiza los cinco bloques de métricas.
+Variables de entorno del frontend: `VITE_API_URL` en `frontend/.env.development` apunta a la URL base del backend desplegado.
 
 ---
 

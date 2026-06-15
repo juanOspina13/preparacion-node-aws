@@ -7,10 +7,10 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   logger.info('getMetrics invoked', { requestId: event.requestContext.requestId });
 
   try {
-    const metrics = getMetrics();
+    const metrics = await getMetrics();
     return ok(metrics);
   } catch (err) {
     logger.error('Failed to fetch metrics', { err });
-    return internalError();
+    return internalError(event.path);
   }
 };

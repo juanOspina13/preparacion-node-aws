@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: "Metrics API \u2014 serverless backend"
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Architectures:
+    - arm64
+    Timeout: 10
+    MemorySize: 256
+    Environment:
+      Variables:
+        LOG_LEVEL: info
+        DB_SSL: 'true'
+Resources:
+  MetricsApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      Cors:
+        AllowMethods: '''GET,OPTIONS'''
+        AllowHeaders: '''Content-Type,Authorization'''
+        AllowOrigin: '''*'''
+  GetMetricsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: GetMetricsFunction
+      Handler: getMetrics.handler
+      Description: Returns cloud resource metrics
+      Events:
+        GetMetrics:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: MetricsApi
+            Path: /metrics
+            Method: GET
+      Policies:
+      - Statement:
+        - Effect: Allow
+          Action:
+          - logs:CreateLogGroup
+          - logs:CreateLogStream
+          - logs:PutLogEvents
+          Resource:
+            Fn::Sub: arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*
+    Metadata:
+      SamResourceId: GetMetricsFunction
+Outputs:
+  MetricsApiUrl:
+    Description: API Gateway endpoint URL
+    Value:
+      Fn::Sub: https://${MetricsApi}.execute-api.${AWS::Region}.amazonaws.com/prod/metrics

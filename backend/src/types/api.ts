@@ -1,7 +1,15 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
 
-const CORS_HEADERS = {
-  'Content-Type': 'application/json',
+// RFC 7807 — Problem Details for HTTP APIs
+export interface ProblemDetail {
+  type: string;
+  title: string;
+  status: number;
+  detail?: string;
+  instance?: string;
+}
+
+const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
 };
@@ -9,23 +17,23 @@ const CORS_HEADERS = {
 export function ok<T>(data: T): APIGatewayProxyResult {
   return {
     statusCode: 200,
-    headers: CORS_HEADERS,
+    headers: { ...CORS, 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   };
 }
 
-export function badRequest(message: string): APIGatewayProxyResult {
+function problem(p: ProblemDetail): APIGatewayProxyResult {
   return {
-    statusCode: 400,
-    headers: CORS_HEADERS,
-    body: JSON.stringify({ message }),
+    statusCode: p.status,
+    headers: { ...CORS, 'Content-Type': 'application/problem+json' },
+    body: JSON.stringify(p),
   };
 }
 
-export function internalError(message = 'Internal server error'): APIGatewayProxyResult {
-  return {
-    statusCode: 500,
-    headers: CORS_HEADERS,
-    body: JSON.stringify({ message }),
-  };
+export function badRequest(detail: string, instance?: string): APIGatewayProxyResult {
+  return problem({ type: 'about:blank', title: 'Bad Request', status: 400, detail, instance });
+}
+
+export function internalError(instance?: string): APIGatewayProxyResult {
+  return problem({ type: 'about:blank', title: 'Internal Server Error', status: 500, instance });
 }
