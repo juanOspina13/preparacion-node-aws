@@ -8,4 +8,12 @@ export const MetricsSchema = z.object({
   userActivity: z.number().int().min(0).max(100),
 });
 
+export const MetricRecordSchema = MetricsSchema.extend({
+  id: z.string().uuid(),
+});
+
+export const PatchMetricsSchema = MetricsSchema.partial();
+
 export type Metrics = z.infer<typeof MetricsSchema>;
+export type MetricRecord = z.infer<typeof MetricRecordSchema>;
+export type PatchMetrics = z.infer<typeof PatchMetricsSchema>;

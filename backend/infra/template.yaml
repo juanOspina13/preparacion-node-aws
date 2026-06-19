@@ -20,7 +20,7 @@ Resources:
     Properties:
       StageName: prod
       Cors:
-        AllowMethods: "'GET,OPTIONS'"
+        AllowMethods: "'GET,POST,PUT,PATCH,DELETE,OPTIONS'"
         AllowHeaders: "'Content-Type,Authorization'"
         AllowOrigin: "'*'"
 
@@ -30,7 +30,7 @@ Resources:
     Properties:
       CodeUri: ../build/
       Handler: getMetrics.handler
-      Description: Returns cloud resource metrics
+      Description: Returns all metric records
       Events:
         GetMetrics:
           Type: Api
@@ -38,14 +38,90 @@ Resources:
             RestApiId: !Ref MetricsApi
             Path: /metrics
             Method: GET
-      # Least-privilege IAM: only the permissions this function actually needs
       Policies:
         - Statement:
             - Effect: Allow
-              Action:
-                - logs:CreateLogGroup
-                - logs:CreateLogStream
-                - logs:PutLogEvents
+              Action: [logs:CreateLogGroup, logs:CreateLogStream, logs:PutLogEvents]
+              Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*'
+
+  # ── Lambda — POST /metrics ───────────────────────────────────────────────────
+  CreateMetricFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../build/
+      Handler: createMetric.handler
+      Description: Creates a new metric record
+      Events:
+        CreateMetric:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MetricsApi
+            Path: /metrics
+            Method: POST
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: [logs:CreateLogGroup, logs:CreateLogStream, logs:PutLogEvents]
+              Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*'
+
+  # ── Lambda — PUT /metrics/{id} ───────────────────────────────────────────────
+  ReplaceMetricFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../build/
+      Handler: replaceMetric.handler
+      Description: Fully replaces a metric record by id
+      Events:
+        ReplaceMetric:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MetricsApi
+            Path: /metrics/{id}
+            Method: PUT
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: [logs:CreateLogGroup, logs:CreateLogStream, logs:PutLogEvents]
+              Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*'
+
+  # ── Lambda — PATCH /metrics/{id} ─────────────────────────────────────────────
+  UpdateMetricFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../build/
+      Handler: updateMetric.handler
+      Description: Partially updates a metric record by id
+      Events:
+        UpdateMetric:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MetricsApi
+            Path: /metrics/{id}
+            Method: PATCH
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: [logs:CreateLogGroup, logs:CreateLogStream, logs:PutLogEvents]
+              Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*'
+
+  # ── Lambda — DELETE /metrics/{id} ────────────────────────────────────────────
+  DeleteMetricFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../build/
+      Handler: deleteMetric.handler
+      Description: Deletes a metric record by id
+      Events:
+        DeleteMetric:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MetricsApi
+            Path: /metrics/{id}
+            Method: DELETE
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: [logs:CreateLogGroup, logs:CreateLogStream, logs:PutLogEvents]
               Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*'
 
 Outputs:

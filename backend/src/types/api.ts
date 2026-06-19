@@ -30,8 +30,24 @@ function problem(p: ProblemDetail): APIGatewayProxyResult {
   };
 }
 
+export function created<T>(data: T): APIGatewayProxyResult {
+  return {
+    statusCode: 201,
+    headers: { ...CORS, 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  };
+}
+
+export function noContent(): APIGatewayProxyResult {
+  return { statusCode: 204, headers: CORS, body: '' };
+}
+
 export function badRequest(detail: string, instance?: string): APIGatewayProxyResult {
   return problem({ type: 'about:blank', title: 'Bad Request', status: 400, detail, instance });
+}
+
+export function notFound(detail: string, instance?: string): APIGatewayProxyResult {
+  return problem({ type: 'about:blank', title: 'Not Found', status: 404, detail, instance });
 }
 
 export function internalError(instance?: string): APIGatewayProxyResult {
