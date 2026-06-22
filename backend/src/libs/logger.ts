@@ -3,7 +3,11 @@ type LogLevel = 'info' | 'warn' | 'error';
 function log(level: LogLevel, msg: string, meta?: unknown): void {
   const entry: Record<string, unknown> = { level, msg, ts: new Date().toISOString() };
   if (meta && typeof meta === 'object') Object.assign(entry, meta);
-  const out = JSON.stringify(entry);
+  const replacer = (_: string, value: unknown) => {
+    if (value instanceof Error) return { message: value.message, stack: value.stack };
+    return value;
+  };
+  const out = JSON.stringify(entry, replacer);
   if (level === 'error') console.error(out);
   else if (level === 'warn') console.warn(out);
   else console.log(out);

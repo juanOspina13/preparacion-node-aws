@@ -3,7 +3,7 @@ import { Metrics, MetricRecord, PatchMetrics } from '../models/metrics';
 
 // Module-level store persists across warm Lambda invocations
 const store = new Map<string, MetricRecord>([
-  ['seed-1', { id: 'seed-1', lambdaInvocations: 120, s3StorageMB: 4.5, apiErrors: 2, responseTime: 85, userActivity: 72 }],
+  ['seed-1', { id: 'seed-1', lambdaInvocations: 125, s3StorageMB: 4.5, apiErrors: 2, responseTime: 85, userActivity: 72 }],
   ['seed-2', { id: 'seed-2', lambdaInvocations: 340, s3StorageMB: 12.1, apiErrors: 0, responseTime: 42, userActivity: 95 }],
 ]);
 
