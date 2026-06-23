@@ -1,0 +1,57 @@
+service: metrics-api
+
+frameworkVersion: '3'
+
+plugins:
+  - serverless-dotenv-plugin   # loads .env into provider.environment
+  - serverless-offline         # runs API Gateway + Lambda locally (no Docker)
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  stage: dev
+  environment:
+    LOG_LEVEL: ${env:LOG_LEVEL, 'info'}
+    DB_SSL: ${env:DB_SSL, 'false'}
+
+functions:
+  getMetrics:
+    handler: build/getMetrics.handler
+    events:
+      - http:
+          path: /metrics
+          method: GET
+          cors: true
+
+  createMetric:
+    handler: build/createMetric.handler
+    events:
+      - http:
+          path: /metrics
+          method: POST
+          cors: true
+
+  replaceMetric:
+    handler: build/replaceMetric.handler
+    events:
+      - http:
+          path: /metrics/{id}
+          method: PUT
+          cors: true
+
+  updateMetric:
+    handler: build/updateMetric.handler
+    events:
+      - http:
+          path: /metrics/{id}
+          method: PATCH
+          cors: true
+
+  deleteMetric:
+    handler: build/deleteMetric.handler
+    events:
+      - http:
+          path: /metrics/{id}
+          method: DELETE
+          cors: true

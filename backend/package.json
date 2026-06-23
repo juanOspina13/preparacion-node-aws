@@ -4,6 +4,7 @@
   "scripts": {
     "build": "tsup",
     "build:watch": "tsup --watch",
+    "dev": "sls offline",
     "lint": "eslint src tests --ext .ts",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "test": "jest",
@@ -16,6 +17,9 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "serverless": "^3",
+    "serverless-dotenv-plugin": "^6",
+    "serverless-offline": "^13",
     "@types/aws-lambda": "^8.10.143",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.0",
