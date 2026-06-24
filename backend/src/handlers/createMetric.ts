@@ -1,5 +1,5 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import { MetricsSchema } from '../models/metrics';
+import { MetricsItemSchema as MetricsSchema } from '../models/metrics';
 import { createMetric } from '../services/metrics.service';
 import { created, badRequest, internalError } from '../types/api';
 import { logger } from '../libs/logger';

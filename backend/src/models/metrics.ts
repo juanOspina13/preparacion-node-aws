@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const MetricsSchema = z.object({
+export const MetricsItemSchema = z.object({
   lambdaInvocations: z.number().int().nonnegative(),
   s3StorageMB: z.number().nonnegative(),
   apiErrors: z.number().int().nonnegative(),
@@ -8,12 +8,14 @@ export const MetricsSchema = z.object({
   userActivity: z.number().int().min(0).max(100),
 });
 
-export const MetricRecordSchema = MetricsSchema.extend({
+export const MetricsSchema = z.array(MetricsItemSchema);
+
+export const MetricRecordSchema = MetricsItemSchema.extend({
   id: z.string().uuid(),
 });
 
-export const PatchMetricsSchema = MetricsSchema.partial();
+export const PatchMetricsSchema = MetricsItemSchema.partial();
 
-export type Metrics = z.infer<typeof MetricsSchema>;
+export type Metrics = z.infer<typeof MetricsItemSchema>;
 export type MetricRecord = z.infer<typeof MetricRecordSchema>;
 export type PatchMetrics = z.infer<typeof PatchMetricsSchema>;

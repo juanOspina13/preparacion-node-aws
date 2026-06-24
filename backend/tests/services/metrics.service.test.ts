@@ -25,13 +25,13 @@ afterEach(() => {
 describe('getMetrics service', () => {
   it('maps snake_case DB columns to camelCase Metrics type', async () => {
     const metrics = await getMetrics();
-    expect(metrics).toEqual({
+    expect(metrics).toEqual([{
       lambdaInvocations: 120,
       s3StorageMB: 450,
       apiErrors: 3,
       responseTime: 250,
-      userActivity: 75,
-    });
+      userActivity: 75      
+    }]);
   });
 
   it('queries the metrics table ordered by recorded_at DESC', async () => {
