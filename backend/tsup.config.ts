@@ -5,7 +5,7 @@ export default defineConfig({
   format: ['cjs'],
   target: 'node20',
   clean: true,
-  minify: true,
+  minify: false,
   splitting: false,
   sourcemap: false,
   outDir: 'build',

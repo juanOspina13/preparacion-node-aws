@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import mysql2 from 'mysql2/promise';
 import { Metrics, MetricRecord, PatchMetrics } from '../models/metrics';
 import { getPool } from '../libs/db';
 
@@ -8,11 +9,11 @@ const store = new Map<string, MetricRecord>([
 ]);
 
 export async function getMetrics(): Promise<Metrics[]> {
-  const result = await getPool().query(
+  const [rows] = await getPool().query<mysql2.RowDataPacket[]>(
     'SELECT lambda_invocations, s3_storage_mb, api_errors, response_time, user_activity FROM metrics ORDER BY recorded_at DESC LIMIT 1'
   );
-  if (result.rowCount === 0) throw new Error('No metrics record found');
-  return result.rows.map(row => ({
+  if (rows.length === 0) throw new Error('No metrics record found');
+  return rows.map(row => ({
     lambdaInvocations: row.lambda_invocations,
     s3StorageMB: row.s3_storage_mb,
     apiErrors: row.api_errors,

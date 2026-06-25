@@ -11,9 +11,20 @@ provider:
   runtime: nodejs20.x
   region: us-east-1
   stage: dev
+  apiGateway:
+    binaryMediaTypes:
+      - 'multipart/form-data'
   environment:
     LOG_LEVEL: ${env:LOG_LEVEL, 'info'}
     DB_SSL: ${env:DB_SSL, 'false'}
+    S3_BUCKET: ${env:S3_BUCKET, 'gym-connect-bucket'}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+          Resource: arn:aws:s3:::gym-connect-bucket/img/*
 
 functions:
   getMetrics:
@@ -54,4 +65,20 @@ functions:
       - http:
           path: /metrics/{id}
           method: DELETE
+          cors: true
+
+  createFolder:
+    handler: build/createFolder.handler
+    events:
+      - http:
+          path: /folders
+          method: POST
+          cors: true
+
+  uploadFile:
+    handler: build/uploadFile.handler
+    events:
+      - http:
+          path: /folders/upload
+          method: POST
           cors: true

@@ -12,6 +12,7 @@ Globals:
       Variables:
         LOG_LEVEL: info
         DB_SSL: 'true'
+        S3_BUCKET: gym-connect-bucket
 
 Resources:
   # ── API Gateway ──────────────────────────────────────────────────────────────
@@ -19,6 +20,8 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: prod
+      BinaryMediaTypes:
+        - 'multipart/form-data'
       Cors:
         AllowMethods: "'GET,POST,PUT,PATCH,DELETE,OPTIONS'"
         AllowHeaders: "'Content-Type,Authorization'"
@@ -124,7 +127,56 @@ Resources:
               Action: [logs:CreateLogGroup, logs:CreateLogStream, logs:PutLogEvents]
               Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*'
 
+  # ── Lambda — POST /folders ───────────────────────────────────────────────────
+  CreateFolderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../build/
+      Handler: createFolder.handler
+      Description: Creates an empty folder prefix in S3
+      Events:
+        CreateFolder:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MetricsApi
+            Path: /folders
+            Method: POST
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: [logs:CreateLogGroup, logs:CreateLogStream, logs:PutLogEvents]
+              Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*'
+            - Effect: Allow
+              Action: s3:PutObject
+              Resource: arn:aws:s3:::gym-connect-bucket/img/*
+
+  # ── Lambda — POST /folders/upload ────────────────────────────────────────────
+  UploadFileFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../build/
+      Handler: uploadFile.handler
+      Description: Uploads a file to an S3 folder under img/
+      Events:
+        UploadFile:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MetricsApi
+            Path: /folders/upload
+            Method: POST
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: [logs:CreateLogGroup, logs:CreateLogStream, logs:PutLogEvents]
+              Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*'
+            - Effect: Allow
+              Action: s3:PutObject
+              Resource: arn:aws:s3:::gym-connect-bucket/img/*
+
 Outputs:
   MetricsApiUrl:
-    Description: API Gateway endpoint URL
+    Description: API Gateway endpoint URL — metrics
     Value: !Sub 'https://${MetricsApi}.execute-api.${AWS::Region}.amazonaws.com/prod/metrics'
+  FoldersApiUrl:
+    Description: API Gateway endpoint URL — folders
+    Value: !Sub 'https://${MetricsApi}.execute-api.${AWS::Region}.amazonaws.com/prod/folders'
