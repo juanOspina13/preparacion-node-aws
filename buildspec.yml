@@ -1,0 +1,15 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18.x
+    commands:
+      - echo "Installing dependencies"
+      - cd backend/         
+      - npm install
+  build:
+    commands:
+      - echo "Running tests and type checks"
+      - npm run build --if-present
+      - npm test
