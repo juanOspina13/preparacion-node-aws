@@ -6,7 +6,7 @@ phases:
       nodejs: 18.x
     commands:
       - echo "Opening backend folder"
-      - cd backend/         
+      - cd backend/
       - echo "Installing dependencies"
       - npm install
   build:
