@@ -4,12 +4,12 @@ import { mockAPIGatewayEvent } from '../helpers';
 import { MetricRecord } from '../../src/models/metrics';
 
 const MOCK_METRICS: MetricRecord = {
-  lambdaInvocations: 120,
-  s3StorageMB: 450,
-  apiErrors: 3,
-  responseTime: 250,
-  userActivity: 75,
-  id: "1"
+  id: 'seed-1',
+  lambdaInvocations: 125,
+  s3StorageMB: 4.5,
+  apiErrors: 2,
+  responseTime: 85,
+  userActivity: 72,
 };
 
 

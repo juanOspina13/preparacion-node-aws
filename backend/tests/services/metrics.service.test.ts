@@ -1,44 +1,20 @@
-import { getMetrics } from '../../src/services/metrics.service';
+import {
+  getMetrics,
+  getMetricById,
+  createMetric,
+  replaceMetric,
+  patchMetric,
+  deleteMetric,
+} from '../../src/services/metrics.service';
+import { MetricRecord } from '../../src/models/metrics';
 
-jest.mock('../../src/libs/db');
-import { getPool } from '../../src/libs/db';
+const SEED_1: MetricRecord = { id: 'seed-1', lambdaInvocations: 125, s3StorageMB: 4.5, apiErrors: 2, responseTime: 85, userActivity: 72 };
+const SEED_2: MetricRecord = { id: 'seed-2', lambdaInvocations: 340, s3StorageMB: 12.1, apiErrors: 0, responseTime: 42, userActivity: 95 };
 
-const mockQuery = jest.fn();
-(getPool as jest.Mock).mockReturnValue({ query: mockQuery });
-
-const DB_ROW = {
-  lambda_invocations: 120,
-  s3_storage_mb: 450,
-  api_errors: 3,
-  response_time: 250,
-  user_activity: 75,
-};
-
-beforeEach(() => {
-  mockQuery.mockResolvedValue({ rows: [DB_ROW], rowCount: 1 });
-});
-
-afterEach(() => {
-  mockQuery.mockReset();
-});
-
-describe('getMetrics service', () => {
-  it('maps snake_case DB columns to camelCase Metrics type', async () => {
+describe('getMetrics', () => {
+  it('returns all seeded dummy records', async () => {
     const metrics = await getMetrics();
-    expect(metrics).toEqual([{
-      lambdaInvocations: 120,
-      s3StorageMB: 450,
-      apiErrors: 3,
-      responseTime: 250,
-      userActivity: 75      
-    }]);
-  });
-
-  it('queries the metrics table ordered by recorded_at DESC', async () => {
-    await getMetrics();
-    const sql: string = mockQuery.mock.calls[0][0];
-    expect(sql).toMatch(/ORDER BY recorded_at DESC/);
-    expect(sql).toMatch(/LIMIT 1/);
+    expect(metrics).toEqual(expect.arrayContaining([SEED_1, SEED_2]));
   });
 
   it('returns values that satisfy the Zod schema', async () => {
@@ -46,9 +22,66 @@ describe('getMetrics service', () => {
     const result = MetricsSchema.safeParse(await getMetrics());
     expect(result.success).toBe(true);
   });
+});
 
-  it('throws when no row is returned', async () => {
-    mockQuery.mockResolvedValueOnce({ rows: [], rowCount: 0 });
-    await expect(getMetrics()).rejects.toThrow('No metrics record found');
+describe('getMetricById', () => {
+  it('returns the record for a known id', async () => {
+    expect(await getMetricById('seed-1')).toEqual(SEED_1);
+  });
+
+  it('returns undefined for an unknown id', async () => {
+    expect(await getMetricById('nonexistent')).toBeUndefined();
+  });
+});
+
+describe('createMetric', () => {
+  it('creates a record with a generated uuid', async () => {
+    const data = { lambdaInvocations: 50, s3StorageMB: 1.0, apiErrors: 0, responseTime: 100, userActivity: 50 };
+    const record = await createMetric(data);
+    expect(record.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+    expect(record).toMatchObject(data);
+  });
+
+  it('created record is retrievable by id', async () => {
+    const data = { lambdaInvocations: 10, s3StorageMB: 0.5, apiErrors: 1, responseTime: 200, userActivity: 30 };
+    const created = await createMetric(data);
+    expect(await getMetricById(created.id)).toEqual(created);
+  });
+});
+
+describe('replaceMetric', () => {
+  it('replaces an existing record', async () => {
+    const original = await createMetric({ lambdaInvocations: 1, s3StorageMB: 1, apiErrors: 0, responseTime: 10, userActivity: 10 });
+    const newData = { lambdaInvocations: 999, s3StorageMB: 99.9, apiErrors: 9, responseTime: 999, userActivity: 99 };
+    const result = await replaceMetric(original.id, newData);
+    expect(result).toEqual({ id: original.id, ...newData });
+  });
+
+  it('returns undefined for a non-existent id', async () => {
+    const data = { lambdaInvocations: 0, s3StorageMB: 0, apiErrors: 0, responseTime: 0, userActivity: 0 };
+    expect(await replaceMetric('nonexistent', data)).toBeUndefined();
+  });
+});
+
+describe('patchMetric', () => {
+  it('updates only the provided fields', async () => {
+    const original = await createMetric({ lambdaInvocations: 100, s3StorageMB: 5, apiErrors: 1, responseTime: 50, userActivity: 60 });
+    const result = await patchMetric(original.id, { apiErrors: 5 });
+    expect(result).toEqual({ ...original, apiErrors: 5 });
+  });
+
+  it('returns undefined for a non-existent id', async () => {
+    expect(await patchMetric('nonexistent', { apiErrors: 5 })).toBeUndefined();
+  });
+});
+
+describe('deleteMetric', () => {
+  it('returns true when deleting an existing record', async () => {
+    const created = await createMetric({ lambdaInvocations: 1, s3StorageMB: 0, apiErrors: 0, responseTime: 0, userActivity: 0 });
+    expect(await deleteMetric(created.id)).toBe(true);
+  });
+
+  it('returns false for a non-existent id', async () => {
+    expect(await deleteMetric('nonexistent')).toBe(false);
   });
 });

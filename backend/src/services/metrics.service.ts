@@ -1,25 +1,13 @@
 import { randomUUID } from 'crypto';
-import mysql2 from 'mysql2/promise';
 import { Metrics, MetricRecord, PatchMetrics } from '../models/metrics';
-import { getPool } from '../libs/db';
 
 const store = new Map<string, MetricRecord>([
   ['seed-1', { id: 'seed-1', lambdaInvocations: 125, s3StorageMB: 4.5, apiErrors: 2, responseTime: 85, userActivity: 72 }],
   ['seed-2', { id: 'seed-2', lambdaInvocations: 340, s3StorageMB: 12.1, apiErrors: 0, responseTime: 42, userActivity: 95 }],
 ]);
 
-export async function getMetrics(): Promise<Metrics[]> {
-  const [rows] = await getPool().query<mysql2.RowDataPacket[]>(
-    'SELECT lambda_invocations, s3_storage_mb, api_errors, response_time, user_activity FROM metrics ORDER BY recorded_at DESC LIMIT 1'
-  );
-  if (rows.length === 0) throw new Error('No metrics record found');
-  return rows.map(row => ({
-    lambdaInvocations: row.lambda_invocations,
-    s3StorageMB: row.s3_storage_mb,
-    apiErrors: row.api_errors,
-    responseTime: row.response_time,
-    userActivity: row.user_activity,
-  }));
+export async function getMetrics(): Promise<MetricRecord[]> {
+  return Array.from(store.values());
 }
 
 export async function getMetricById(id: string): Promise<MetricRecord | undefined> {
