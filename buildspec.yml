@@ -5,11 +5,13 @@ phases:
     runtime-versions:
       nodejs: 18.x
     commands:
+      - ls -la
+      - cd backend
       - echo "Installing dependencies"
-      - cd backend && npm install
+      - npm install
   build:
     commands:
       - echo "Building the application"
-      - cd backend && npm run build --if-present
+      - npm run build --if-present
       - echo "Running tests"
-      - cd backend && npm test
+      - npm test
